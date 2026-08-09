@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import {
 	type ConfettiSettings,
 	DEFAULT_CONFETTI_SETTINGS,
@@ -13,22 +13,47 @@ export interface UseConfettiSettingsReturn {
 	resetToDefaults: () => void;
 }
 
+type Listener = () => void;
+
+const listeners = new Set<Listener>();
+let settingsStore = loadStoredSettings();
+
+function notify() {
+	for (const listener of listeners) {
+		listener();
+	}
+}
+
+function updateSettingsStore(partial: Partial<ConfettiSettings>) {
+	settingsStore = normalizeSettings({ ...settingsStore, ...partial });
+	saveStoredSettings(settingsStore);
+	notify();
+}
+
+function resetSettingsStore() {
+	settingsStore = { ...DEFAULT_CONFETTI_SETTINGS };
+	saveStoredSettings(settingsStore);
+	notify();
+}
+
 export function useConfettiSettings(): UseConfettiSettingsReturn {
-	const [settings, setInternalSettings] = useState<ConfettiSettings>(() =>
-		loadStoredSettings(),
+	const settings = useSyncExternalStore(
+		(callback) => {
+			listeners.add(callback);
+			return () => {
+				listeners.delete(callback);
+			};
+		},
+		() => settingsStore,
+		() => DEFAULT_CONFETTI_SETTINGS,
 	);
 
 	const setSettings = useCallback((partial: Partial<ConfettiSettings>) => {
-		setInternalSettings((current) => {
-			const next = normalizeSettings({ ...current, ...partial });
-			saveStoredSettings(next);
-			return next;
-		});
+		updateSettingsStore(partial);
 	}, []);
 
 	const resetToDefaults = useCallback(() => {
-		saveStoredSettings(DEFAULT_CONFETTI_SETTINGS);
-		setInternalSettings(DEFAULT_CONFETTI_SETTINGS);
+		resetSettingsStore();
 	}, []);
 
 	return { settings, setSettings, resetToDefaults };
