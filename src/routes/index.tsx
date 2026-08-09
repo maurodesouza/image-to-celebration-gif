@@ -2,12 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { encode } from "modern-gif";
 import workerUrl from "modern-gif/worker?url";
 import { useEffect, useId, useRef, useState } from "react";
-import { DEFAULT_CONFETTI_SETTINGS } from "../features/confetti/confettiSettings";
+import { ConfettiSettingsPanel } from "#/components/ConfettiSettingsPanel";
+import { DEFAULT_CONFETTI_SETTINGS } from "#/features/confetti/confettiSettings";
 import {
 	initParticles,
 	renderFrame,
 	updateParticles,
-} from "../features/confetti/engine";
+} from "#/features/confetti/engine";
 
 export const Route = createFileRoute("/")({
 	component: Home,
@@ -312,6 +313,13 @@ function Home() {
 					</div>
 				</section>
 
+				<section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-sm">
+					<h2 className="mb-4 text-lg font-semibold text-white">
+						3. Confetti settings
+					</h2>
+					<ConfettiSettingsPanel />
+				</section>
+
 				<button
 					type="button"
 					disabled={!selectedFile || isGenerating}
@@ -346,7 +354,7 @@ function Home() {
 				{outputUrl && (
 					<section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-sm">
 						<h2 className="mb-4 text-lg font-semibold text-white">
-							3. Download your GIF
+							4. Download your GIF
 						</h2>
 						<div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
 							<img
