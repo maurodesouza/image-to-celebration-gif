@@ -25,6 +25,12 @@ To build this application for production:
 pnpm build
 ```
 
+## Deployment
+
+Pushes to `main` are automatically built and deployed to GitHub Pages by the [deploy workflow](.github/workflows/deploy.yml).
+
+The live site is available at the GitHub Pages URL configured for this repository.
+
 ## Styling
 
 This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
