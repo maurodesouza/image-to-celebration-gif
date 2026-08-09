@@ -155,7 +155,7 @@ function Home() {
 			}
 
 			const particles = createConfettiParticles(width, height);
-			const frames: Array<{ data: Uint8ClampedArray; delay: number }> = [];
+			const frames: Array<{ data: ArrayBuffer; delay: number }> = [];
 			const frameInterval = 1000 / GIF_FPS;
 			const start = performance.now();
 			let lastTime = start;
@@ -178,7 +178,7 @@ function Home() {
 					) {
 						const imageData = ctx.getImageData(0, 0, width, height);
 						frames.push({
-							data: imageData.data,
+							data: imageData.data.buffer as ArrayBuffer,
 							delay: GIF_FRAME_DELAY,
 						});
 						captured += 1;
@@ -192,7 +192,7 @@ function Home() {
 							renderFrame(ctx, img, width, height, particles);
 							const imageData = ctx.getImageData(0, 0, width, height);
 							frames.push({
-								data: imageData.data,
+								data: imageData.data.buffer as ArrayBuffer,
 								delay: GIF_FRAME_DELAY,
 							});
 							captured += 1;
