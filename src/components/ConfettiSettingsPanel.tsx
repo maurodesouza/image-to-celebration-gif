@@ -105,7 +105,7 @@ export function ConfettiSettingsPanel() {
 						{BURST_OPTIONS.map((option) => (
 							<label
 								key={option}
-								className="flex items-center gap-2 text-slate-300 has-[:checked]:text-indigo-400"
+								className="flex items-center gap-2 text-slate-300 has-checked:text-indigo-400"
 							>
 								<input
 									type="radio"
