@@ -3,6 +3,12 @@ import { encode } from "modern-gif";
 import workerUrl from "modern-gif/worker?url";
 import { useEffect, useId, useRef, useState } from "react";
 import { ConfettiSettingsPanel } from "#/components/ConfettiSettingsPanel";
+import { DEFAULT_CONFETTI_SETTINGS } from "#/features/confetti/confettiSettings";
+import {
+	initParticles,
+	renderFrame,
+	updateParticles,
+} from "#/features/confetti/engine";
 
 export const Route = createFileRoute("/")({
 	component: Home,
@@ -18,29 +24,6 @@ const GIF_FPS = 12;
 const GIF_FRAME_DELAY = 8;
 const GIF_FRAME_COUNT = 63;
 const GIF_DURATION_MS = 5000;
-const CONFETTI_COUNT = 120;
-const CONFETTI_COLORS = [
-	"#ef4444",
-	"#f97316",
-	"#eab308",
-	"#22c55e",
-	"#06b6d4",
-	"#3b82f6",
-	"#8b5cf6",
-	"#ec4899",
-];
-
-interface ConfettiParticle {
-	x: number;
-	y: number;
-	vx: number;
-	vy: number;
-	gravity: number;
-	color: string;
-	size: number;
-	rotation: number;
-	rotationSpeed: number;
-}
 
 function Home() {
 	const inputId = useId();
@@ -155,7 +138,10 @@ function Home() {
 				throw new Error("Could not create canvas context.");
 			}
 
-			const particles = createConfettiParticles(width, height);
+			const settings = DEFAULT_CONFETTI_SETTINGS;
+			const particles = initParticles(settings, width, height, 0);
+			let burstIndex = 1;
+			let nextBurstTime = settings.burstIntervalMs;
 			const frames: Array<{ data: ArrayBuffer; delay: number }> = [];
 			const frameInterval = 1000 / GIF_FPS;
 			const start = performance.now();
@@ -170,8 +156,16 @@ function Home() {
 					const dt = Math.min((now - lastTime) / 1000, 0.1);
 					lastTime = now;
 
-					updateParticles(particles, dt);
-					renderFrame(ctx, img, width, height, particles);
+					if (burstIndex < settings.burstCount && elapsed >= nextBurstTime) {
+						particles.push(
+							...initParticles(settings, width, height, nextBurstTime),
+						);
+						burstIndex += 1;
+						nextBurstTime = burstIndex * settings.burstIntervalMs;
+					}
+
+					updateParticles(particles, dt, settings, elapsed);
+					renderFrame(ctx, img, width, height, particles, settings);
 
 					if (
 						captured < GIF_FRAME_COUNT &&
@@ -190,7 +184,7 @@ function Home() {
 						rafId = requestAnimationFrame(step);
 					} else {
 						while (captured < GIF_FRAME_COUNT) {
-							renderFrame(ctx, img, width, height, particles);
+							renderFrame(ctx, img, width, height, particles, settings);
 							const imageData = ctx.getImageData(0, 0, width, height);
 							frames.push({
 								data: imageData.data.buffer as ArrayBuffer,
@@ -404,70 +398,6 @@ function calculateGifSize(img: HTMLImageElement) {
 		width: Math.max(1, Math.round(img.naturalWidth * scale)),
 		height: Math.max(1, Math.round(img.naturalHeight * scale)),
 	};
-}
-
-function createConfettiParticles(
-	canvasWidth: number,
-	canvasHeight: number,
-): ConfettiParticle[] {
-	const originX = canvasWidth / 2;
-	const originY = canvasHeight * 0.85;
-	const particles: ConfettiParticle[] = [];
-	const spread = Math.PI * 0.75;
-
-	for (let i = 0; i < CONFETTI_COUNT; i++) {
-		const angle = -Math.PI / 2 + (Math.random() - 0.5) * spread;
-		const speed = 400 + Math.random() * 600;
-
-		particles.push({
-			x: originX,
-			y: originY,
-			vx: Math.cos(angle) * speed,
-			vy: Math.sin(angle) * speed,
-			gravity: 500 + Math.random() * 500,
-			color:
-				CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-			size: 4 + Math.random() * 6,
-			rotation: Math.random() * Math.PI * 2,
-			rotationSpeed: (Math.random() - 0.5) * 10,
-		});
-	}
-
-	return particles;
-}
-
-function updateParticles(particles: ConfettiParticle[], dt: number) {
-	for (const particle of particles) {
-		particle.vy += particle.gravity * dt;
-		particle.x += particle.vx * dt;
-		particle.y += particle.vy * dt;
-		particle.rotation += particle.rotationSpeed * dt;
-	}
-}
-
-function renderFrame(
-	ctx: CanvasRenderingContext2D,
-	img: HTMLImageElement,
-	width: number,
-	height: number,
-	particles: ConfettiParticle[],
-) {
-	ctx.clearRect(0, 0, width, height);
-	ctx.drawImage(img, 0, 0, width, height);
-
-	for (const particle of particles) {
-		ctx.save();
-		ctx.translate(particle.x, particle.y);
-		ctx.rotate(particle.rotation);
-		ctx.fillStyle = particle.color;
-		ctx.fillRect(
-			-particle.size / 2,
-			-particle.size / 2,
-			particle.size,
-			particle.size,
-		);
-		ctx.restore();
-	}
 }
 
 function triggerDownload(url: string, filename: string) {
