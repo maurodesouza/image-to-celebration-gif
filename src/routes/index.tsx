@@ -21,8 +21,8 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const GIF_MAX_WIDTH = 640;
 const GIF_MAX_HEIGHT = 640;
-const GIF_FPS = 12;
-const GIF_FRAME_DELAY = 8;
+const GIF_FPS = 50;
+const GIF_FRAME_DELAY = Math.round(1000 / GIF_FPS);
 
 function Home() {
 	const inputId = useId();
