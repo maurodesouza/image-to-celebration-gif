@@ -235,7 +235,7 @@ function Home() {
 			<div className="mx-auto w-full max-w-2xl">
 				<header className="mb-10 text-center">
 					<h1 className="mb-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
-						<span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">
+						<span className="bg-linear-to-r from-indigo-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">
 							Image to Celebration GIF
 						</span>
 					</h1>
@@ -251,7 +251,7 @@ function Home() {
 					</h2>
 					<label
 						htmlFor={inputId}
-						className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-colors focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-slate-950 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60 sm:p-12 ${
+						className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-colors focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-slate-950 has-disabled:cursor-not-allowed has-disabled:opacity-60 sm:p-12 ${
 							isDragging
 								? "border-indigo-500 bg-slate-800"
 								: "border-slate-700 bg-slate-800 hover:border-slate-500"
