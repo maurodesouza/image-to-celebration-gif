@@ -231,95 +231,144 @@ function Home() {
 	};
 
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-4 py-12 text-slate-100">
-			<div className="w-full max-w-xl">
-				<h1 className="mb-2 text-center text-3xl font-bold sm:text-4xl">
-					Image to Celebration GIF
-				</h1>
-				<p className="mb-8 text-center text-slate-400">
-					Upload an image to get started.
-				</p>
-
-				<label
-					htmlFor={inputId}
-					className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-colors focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 focus-within:ring-offset-slate-950 sm:p-12 ${
-						isDragging
-							? "border-blue-500 bg-slate-900"
-							: "border-slate-700 bg-slate-900 hover:border-slate-500"
-					}`}
-					onDragEnter={handleDragEnter}
-					onDragLeave={handleDragLeave}
-					onDragOver={(event) => event.preventDefault()}
-					onDrop={handleDrop}
-				>
-					<input
-						id={inputId}
-						type="file"
-						accept={ACCEPTED_TYPES.join(",")}
-						className="sr-only"
-						onChange={handleInputChange}
-						disabled={isGenerating}
-					/>
-					<span className="text-lg font-medium">
-						Click or drag an image here
-					</span>
-					<span className="mt-1 text-sm text-slate-400">
-						PNG, JPEG, WebP, or GIF up to 10 MB
-					</span>
-				</label>
-
-				{error && (
-					<p
-						className="mt-4 rounded-lg bg-red-950 p-3 text-center text-sm text-red-200"
-						role="alert"
-					>
-						{error}
+		<main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-100 sm:px-6 sm:py-12 lg:px-8">
+			<div className="mx-auto w-full max-w-2xl">
+				<header className="mb-10 text-center">
+					<h1 className="mb-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
+						<span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">
+							Image to Celebration GIF
+						</span>
+					</h1>
+					<p className="mx-auto max-w-lg text-slate-400">
+						Upload an image and we’ll overlay a colorful confetti explosion,
+						turning it into a shareable celebration GIF.
 					</p>
-				)}
+				</header>
 
-				{previewUrl && (
-					<div className="mt-8 rounded-2xl border border-slate-700 bg-slate-900 p-4">
-						<img
-							src={previewUrl}
-							alt={
-								selectedFile
-									? `Preview of ${selectedFile.name}`
-									: "Image preview"
-							}
-							className="mx-auto max-h-80 w-full rounded-xl object-contain"
+				<section className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-sm">
+					<h2 className="mb-4 text-lg font-semibold text-white">
+						1. Upload your image
+					</h2>
+					<label
+						htmlFor={inputId}
+						className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-colors focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-slate-950 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60 sm:p-12 ${
+							isDragging
+								? "border-indigo-500 bg-slate-800"
+								: "border-slate-700 bg-slate-800 hover:border-slate-500"
+						}`}
+						onDragEnter={handleDragEnter}
+						onDragLeave={handleDragLeave}
+						onDragOver={(event) => event.preventDefault()}
+						onDrop={handleDrop}
+					>
+						<input
+							id={inputId}
+							type="file"
+							accept={ACCEPTED_TYPES.join(",")}
+							className="sr-only"
+							onChange={handleInputChange}
+							disabled={isGenerating}
 						/>
-						<p className="mt-2 text-center text-sm text-slate-400">
-							{selectedFile?.name}
+						<div className="flex flex-col items-center gap-1">
+							<span className="text-lg font-medium">
+								Click or drag an image here
+							</span>
+							<span className="text-sm text-slate-400">
+								PNG, JPEG, WebP, or GIF up to 10 MB
+							</span>
+						</div>
+					</label>
+
+					{error && (
+						<p
+							className="mt-4 rounded-lg bg-red-950 p-3 text-center text-sm text-red-200"
+							role="alert"
+						>
+							{error}
 						</p>
+					)}
+				</section>
+
+				<section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-sm">
+					<h2 className="mb-4 text-lg font-semibold text-white">2. Preview</h2>
+					<div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+						{previewUrl ? (
+							<div>
+								<img
+									src={previewUrl}
+									alt={
+										selectedFile
+											? `Preview of ${selectedFile.name}`
+											: "Image preview"
+									}
+									className="mx-auto max-h-80 w-full rounded-lg object-contain"
+								/>
+								<p className="mt-3 text-center text-sm text-slate-400">
+									{selectedFile?.name}
+								</p>
+							</div>
+						) : (
+							<div className="py-12 text-center">
+								<p className="text-slate-500">No image selected</p>
+								<p className="mt-1 text-sm text-slate-600">
+									Upload an image above to preview it here.
+								</p>
+							</div>
+						)}
 					</div>
-				)}
+				</section>
 
 				<button
 					type="button"
 					disabled={!selectedFile || isGenerating}
 					onClick={handleGenerate}
-					className="mt-8 w-full rounded-xl bg-blue-600 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+					className="mt-8 w-full rounded-xl bg-indigo-600 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
 				>
 					{isGenerating
 						? `Generating... ${progress}%`
 						: "Generate Celebration GIF"}
 				</button>
 
+				{isGenerating && (
+					<div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-sm">
+						<div className="mb-4 flex items-center gap-3">
+							<div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-700 border-t-indigo-500" />
+							<p className="font-medium text-white">
+								Assembling confetti frames…
+							</p>
+						</div>
+						<div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+							<div
+								className="h-full bg-indigo-500 transition-all duration-200"
+								style={{ width: `${progress}%` }}
+							/>
+						</div>
+						<p className="mt-2 text-right text-sm text-slate-400">
+							{progress}%
+						</p>
+					</div>
+				)}
+
 				{outputUrl && (
-					<div className="mt-8 rounded-2xl border border-slate-700 bg-slate-900 p-4">
-						<img
-							src={outputUrl}
-							alt="Generated celebration GIF"
-							className="mx-auto max-h-80 w-full rounded-xl object-contain"
-						/>
+					<section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-sm">
+						<h2 className="mb-4 text-lg font-semibold text-white">
+							3. Download your GIF
+						</h2>
+						<div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+							<img
+								src={outputUrl}
+								alt="Generated celebration GIF"
+								className="mx-auto max-h-80 w-full rounded-lg object-contain"
+							/>
+						</div>
 						<a
 							href={outputUrl}
 							download="celebration.gif"
-							className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-green-600 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-950"
+							className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
 						>
 							Download GIF
 						</a>
-					</div>
+					</section>
 				)}
 			</div>
 		</main>
