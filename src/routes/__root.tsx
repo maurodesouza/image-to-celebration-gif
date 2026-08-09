@@ -15,7 +15,12 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "Image to Celebration GIF",
+			},
+			{
+				name: "description",
+				content:
+					"Turn any image into a shareable confetti celebration GIF right in your browser.",
 			},
 		],
 		links: [
