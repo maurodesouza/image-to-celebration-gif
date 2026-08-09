@@ -4,12 +4,12 @@ import workerUrl from "modern-gif/worker?url";
 import { useEffect, useId, useRef, useState } from "react";
 import { ConfettiPreview } from "#/components/ConfettiPreview";
 import { ConfettiSettingsPanel } from "#/components/ConfettiSettingsPanel";
-import { DEFAULT_CONFETTI_SETTINGS } from "#/features/confetti/confettiSettings";
 import {
 	initParticles,
 	renderFrame,
 	updateParticles,
 } from "#/features/confetti/engine";
+import { useConfettiSettings } from "#/features/confetti/useConfettiSettings";
 
 export const Route = createFileRoute("/")({
 	component: Home,
@@ -23,8 +23,6 @@ const GIF_MAX_WIDTH = 640;
 const GIF_MAX_HEIGHT = 640;
 const GIF_FPS = 12;
 const GIF_FRAME_DELAY = 8;
-const GIF_FRAME_COUNT = 63;
-const GIF_DURATION_MS = 5000;
 
 function Home() {
 	const inputId = useId();
@@ -37,6 +35,7 @@ function Home() {
 	const [isDragging, setIsDragging] = useState(false);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [progress, setProgress] = useState(0);
+	const { settings } = useConfettiSettings();
 
 	useEffect(() => {
 		if (!selectedFile) {
@@ -139,12 +138,12 @@ function Home() {
 				throw new Error("Could not create canvas context.");
 			}
 
-			const settings = DEFAULT_CONFETTI_SETTINGS;
 			const particles = initParticles(settings, width, height, 0);
 			let burstIndex = 1;
 			let nextBurstTime = settings.burstIntervalMs;
 			const frames: Array<{ data: ArrayBuffer; delay: number }> = [];
 			const frameInterval = 1000 / GIF_FPS;
+			const frameCount = Math.ceil(settings.gifDurationMs / (1000 / GIF_FPS));
 			const start = performance.now();
 			let lastTime = start;
 			let captured = 0;
@@ -168,23 +167,20 @@ function Home() {
 					updateParticles(particles, dt, settings, elapsed);
 					renderFrame(ctx, img, width, height, particles, settings);
 
-					if (
-						captured < GIF_FRAME_COUNT &&
-						elapsed >= captured * frameInterval
-					) {
+					if (captured < frameCount && elapsed >= captured * frameInterval) {
 						const imageData = ctx.getImageData(0, 0, width, height);
 						frames.push({
 							data: imageData.data.buffer as ArrayBuffer,
 							delay: GIF_FRAME_DELAY,
 						});
 						captured += 1;
-						setProgress(Math.round((captured / GIF_FRAME_COUNT) * 100));
+						setProgress(Math.round((captured / frameCount) * 100));
 					}
 
-					if (elapsed < GIF_DURATION_MS) {
+					if (elapsed < settings.gifDurationMs) {
 						rafId = requestAnimationFrame(step);
 					} else {
-						while (captured < GIF_FRAME_COUNT) {
+						while (captured < frameCount) {
 							renderFrame(ctx, img, width, height, particles, settings);
 							const imageData = ctx.getImageData(0, 0, width, height);
 							frames.push({
