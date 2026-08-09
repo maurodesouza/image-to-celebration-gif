@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { encode } from "modern-gif";
 import workerUrl from "modern-gif/worker?url";
 import { useEffect, useId, useRef, useState } from "react";
+import { ConfettiPreview } from "#/components/ConfettiPreview";
 import { ConfettiSettingsPanel } from "#/components/ConfettiSettingsPanel";
 import { DEFAULT_CONFETTI_SETTINGS } from "#/features/confetti/confettiSettings";
 import {
@@ -287,28 +288,11 @@ function Home() {
 				<section className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-sm">
 					<h2 className="mb-4 text-lg font-semibold text-white">2. Preview</h2>
 					<div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-						{previewUrl ? (
-							<div>
-								<img
-									src={previewUrl}
-									alt={
-										selectedFile
-											? `Preview of ${selectedFile.name}`
-											: "Image preview"
-									}
-									className="mx-auto max-h-80 w-full rounded-lg object-contain"
-								/>
-								<p className="mt-3 text-center text-sm text-slate-400">
-									{selectedFile?.name}
-								</p>
-							</div>
-						) : (
-							<div className="py-12 text-center">
-								<p className="text-slate-500">No image selected</p>
-								<p className="mt-1 text-sm text-slate-600">
-									Upload an image above to preview it here.
-								</p>
-							</div>
+						<ConfettiPreview imageUrl={previewUrl} />
+						{selectedFile && (
+							<p className="mt-3 text-center text-sm text-slate-400">
+								{selectedFile.name}
+							</p>
 						)}
 					</div>
 				</section>

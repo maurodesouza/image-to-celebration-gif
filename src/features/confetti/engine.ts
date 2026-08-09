@@ -94,7 +94,7 @@ export function updateParticles(
 
 export function renderFrame(
 	ctx: CanvasRenderingContext2D,
-	image: HTMLImageElement,
+	image: CanvasImageSource,
 	width: number,
 	height: number,
 	particles: ConfettiParticle[],
